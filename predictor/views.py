@@ -1,21 +1,23 @@
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
-import tflite_runtime.interpreter as tflite
+import tensorflow as tf
 import numpy as np
 from PIL import Image
 import os
 
-# Load TFLite model once
+# 🔹 Load TFLite model using full TensorFlow
 MODEL_PATH = os.path.join(settings.BASE_DIR, "predictor", "alexnet_model.tflite")
-interpreter = tflite.Interpreter(model_path=MODEL_PATH)   # ✅ fixed
+interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
 interpreter.allocate_tensors()
 
+# Get input and output details
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
+# 🔹 Preprocess image same as training
 def preprocess_image(image_path):
-    img = Image.open(image_path).resize((224, 224))  
+    img = Image.open(image_path).resize((224, 224))  # size must match model
     img = np.array(img) / 255.0
     img = np.expand_dims(img, axis=0).astype(np.float32)
     return img
@@ -24,7 +26,7 @@ def index(request):
     return render(request, "index.html")
 
 def predict_image(request):
-    # Add signature by default
+    # Signature for your credit
     context = {"signature": "Code by Tech_Sarwesh"}
 
     if request.method == "POST" and request.FILES.get("image"):
@@ -36,14 +38,14 @@ def predict_image(request):
         # Preprocess
         img = preprocess_image(full_path)
 
-        # Run inference
+        # 🔹 Run inference
         interpreter.set_tensor(input_details[0]["index"], img)
         interpreter.invoke()
         prediction = interpreter.get_tensor(output_details[0]["index"])[0][0]
 
         result = "Dog" if prediction > 0.5 else "Cat"
 
-        # Update context with result and uploaded image
+        # Update context
         context.update({
             "result": result,
             "uploaded_image": fs.url(file_path),
