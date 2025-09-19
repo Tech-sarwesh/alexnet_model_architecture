@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <title>Cat vs Dog Classifier</title>
+    <style>
+        /* 🌈 Background */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f6d365, #fda085);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 🃏 Card */
+        .container {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 350px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 26px;
+            color: #ff6f61;
+        }
+
+        /* 🎨 Input & Button */
+        input[type="file"] {
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        button {
+            background: #ff6f61;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #ff3b2f;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        .result img {
+            margin-top: 10px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* 💻 Footer / Signature */
+        footer {
+            margin-top: 30px;
+            font-style: italic;
+            color: #555;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐱🐶 Cat vs Dog Classifier</h1>
+
+        <form action="{% url 'predict' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if uploaded_image %}
+            <div class="result">
+                <h2>Prediction: {{ result }}</h2>
+                <img src="{{ uploaded_image }}" alt="Uploaded Image" width="250">
+            </div>
+        {% endif %}
+
+        <!-- Tech_Sarwesh Signature -->
+        <footer>
+            Code by Tech_Sarwesh
+        </footer>
+    </div>
+</body>
+</html>
