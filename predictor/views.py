@@ -1,21 +1,21 @@
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
-import tensorflow as tf
+import tflite_runtime.interpreter as tflite
 import numpy as np
 from PIL import Image
 import os
 
 # Load TFLite model once
 MODEL_PATH = os.path.join(settings.BASE_DIR, "predictor", "alexnet_model.tflite")
-interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
+interpreter = tflite.Interpreter(model_path=MODEL_PATH)   # ✅ fixed
 interpreter.allocate_tensors()
 
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
 def preprocess_image(image_path):
-    img = Image.open(image_path).resize((224, 224))  # <-- fixed
+    img = Image.open(image_path).resize((224, 224))  
     img = np.array(img) / 255.0
     img = np.expand_dims(img, axis=0).astype(np.float32)
     return img
